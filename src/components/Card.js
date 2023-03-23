@@ -1,7 +1,7 @@
 const Card = ({ image, selected, onClick }) => {
-    return(
+    return (
         <div className="card">
-            <div className = {selected && 'selected'}>
+            <div className={selected && 'selected'}>
                 <img alt="" src={image} className="card-face" />
 
                 <img
@@ -12,7 +12,7 @@ const Card = ({ image, selected, onClick }) => {
                 />
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default Card;
