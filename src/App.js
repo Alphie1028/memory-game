@@ -6,11 +6,12 @@ import shuffle from './utilities/shuffle';
 
 function App() {
   const [wins, setWins] = useState(0); // Win streak
-  const [cards, setCards] = useState(shuffle); // Cards array from assets
+  const [cards, setCards] = useState(shuffle()); // Cards array from assets
   const [pickOne, setPickOne] = useState(null); // First selection
   const [pickTwo, setPickTwo] = useState(null); // Second selection
   const [disabled, setDisabled] = useState(false); // Delay handler
   const [setBadge, clearBadge] = useAppBadge(); // Handles app badge
+  const [gameInProgress, setGameInProgress] = useState(false);
 
   // Handle card selection
   const handleClick = (card) => {
@@ -30,7 +31,18 @@ function App() {
     setWins(0);
     clearBadge();
     handleTurn();
-    setCards(shuffle);
+    setCards(shuffle());
+    setGameInProgress(true); // set game in progress
+  };
+
+  const continueGame = () => {
+    console.log('continueGame called!');
+    clearBadge();
+    handleTurn();
+    if (gameInProgress === false) {
+      setCards(shuffle());
+      console.log('handleTurn and setCards called!');
+    }
   };
 
   // Used for selection and match handling
@@ -71,16 +83,15 @@ function App() {
 
   // If player has found all matches, handle accordingly
   useEffect(() => {
-    // Check for any remaining card matches
     const checkWin = cards.filter((card) => !card.matched);
-
-    // All matches made, handle win/badge counters
+    console.log('checkWin:', checkWin);
     if (cards.length && checkWin.length < 1) {
-      console.log('You win!');
+      console.log('All cards matched!');
       setWins(wins + 1);
       setBadge();
-      handleTurn();
-      setCards(shuffle);
+      setGameInProgress(false); // game is over
+      console.log('You win!');
+      continueGame();
     }
   }, [cards, setBadge, wins]);
 
@@ -91,7 +102,6 @@ function App() {
         {cards.map((card) => {
           // Destructured card properties
           const { image, matched } = card;
-
           return (
             <Card
               key={image.id}
