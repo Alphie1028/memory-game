@@ -28,6 +28,7 @@ function App() {
 
   // Start over
   const handleNewGame = () => {
+    console.log('handle new game called')
     setWins(0);
     clearBadge();
     handleTurn();
@@ -37,9 +38,9 @@ function App() {
 
   const continueGame = () => {
     console.log('continueGame called!');
-    clearBadge();
     handleTurn();
     if (gameInProgress === false) {
+      setGameInProgress(true);
       setCards(shuffle());
       console.log('handleTurn and setCards called!');
     }
@@ -51,20 +52,25 @@ function App() {
 
     // Two cards have been clicked
     if (pickOne && pickTwo) {
+      console.log('pick1/2 true');
       // Check if the cards the same
       if (pickOne.image === pickTwo.image) {
+        console.log('images matched')
         setCards((prevCards) => {
           return prevCards.map((card) => {
             if (card.image === pickOne.image) {
+              console.log('pick one matches just clicked')
               // Update card property to reflect match
               return { ...card, matched: true };
             } else {
+              console.log('card returned');
               // No match
               return card;
             }
           });
         });
         handleTurn();
+        console.log('turn ended');
       } else {
         // Prevent new selections until after delay
         setDisabled(true);
@@ -78,22 +84,31 @@ function App() {
     return () => {
       clearTimeout(pickTimer);
     };
-  }, [cards, pickOne, pickTwo, setBadge, wins]);
+  }, [cards, pickOne, pickTwo]);
 
 
   // If player has found all matches, handle accordingly
   useEffect(() => {
     const checkWin = cards.filter((card) => !card.matched);
     console.log('checkWin:', checkWin);
-    if (cards.length && checkWin.length < 1) {
-      console.log('All cards matched!');
-      setWins(wins + 1);
-      setBadge();
-      setGameInProgress(false); // game is over
-      console.log('You win!');
-      continueGame();
+    if (checkWin.length < 1) {
+      console.log('All cards matched!')
+      document.getElementsByClassName('grid').innerHTML = '';
+      
+      setWins(wins + 1)
+      
+
+        setBadge();
+        setGameInProgress(false); // game is over
+        console.log('You win!');
+        continueGame();
+      
+
+      
+
     }
-  }, [cards, setBadge, wins]);
+  }, [cards]);
+
 
   return (
     <>
@@ -104,7 +119,7 @@ function App() {
           const { image, matched } = card;
           return (
             <Card
-              key={image.id}
+              key={card.id}
               card={card}
               image={image}
               onClick={() => handleClick(card)}
